@@ -15,6 +15,8 @@ typedef MultiTriggerAutocompleteFieldViewBuilder = Widget Function(
   FocusNode focusNode,
 );
 
+/// Positions the [AutocompleteTrigger] options around the [TextField] or
+/// [TextFormField] that triggered the autocomplete.
 enum OptionsAlignment {
   /// The options are displayed below the field.
   ///
@@ -134,6 +136,14 @@ class MultiTriggerAutocomplete extends StatefulWidget {
     );
   }
 
+  /// Returns the nearest [StreamAutocomplete] ancestor of the given context.
+  static _MultiTriggerAutocompleteState of(BuildContext context) {
+    final state =
+        context.findAncestorStateOfType<_MultiTriggerAutocompleteState>();
+    assert(state != null, 'MultiTriggerAutocomplete not found');
+    return state!;
+  }
+
   @override
   _MultiTriggerAutocompleteState createState() =>
       _MultiTriggerAutocompleteState();
@@ -147,6 +157,7 @@ class _MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
   AutocompleteTrigger? _currentTrigger;
 
   bool _hideOptions = false;
+  String _lastFieldText = '';
 
   // True if the state indicates that the options should be visible.
   bool get _shouldShowOptions {
@@ -156,7 +167,45 @@ class _MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
         _currentTrigger != null;
   }
 
-  void _closeOptions() {
+  void acceptAutocompleteOption(
+    String option, {
+    bool keepTrigger = true,
+  }) {
+    if (option.isEmpty) return;
+
+    final query = _currentQuery;
+    final trigger = _currentTrigger;
+    if (query == null || trigger == null) return;
+
+    final querySelection = query.selection;
+    final text = _textEditingController.text;
+
+    var start = querySelection.baseOffset;
+    if (!keepTrigger) start -= 1;
+
+    final end = querySelection.extentOffset;
+
+    final alreadyContainsSpace = text.substring(end).startsWith(' ');
+    // Having extra space helps dismissing the auto-completion view.
+    if (!alreadyContainsSpace) option += ' ';
+
+    var selectionOffset = start + option.length;
+    // In case the extra space is already there, we need to move the cursor
+    // after the space.
+    if (alreadyContainsSpace) selectionOffset += 1;
+
+    final newText = text.replaceRange(start, end, option);
+    final newSelection = TextSelection.collapsed(offset: selectionOffset);
+
+    _textEditingController.value = TextEditingValue(
+      text: newText,
+      selection: newSelection,
+    );
+
+    return closeOptions();
+  }
+
+  void closeOptions() {
     final prev = _currentQuery;
     if (prev == null) return;
 
@@ -164,7 +213,7 @@ class _MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
     if (mounted) setState(() {});
   }
 
-  void _showOptions(
+  void showOptions(
     AutocompleteQuery query,
     AutocompleteTrigger trigger,
   ) {
@@ -193,31 +242,37 @@ class _MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
   }
 
   // Called when _textEditingController changes.
-  void _onChangedField() {
-    debounce(
-      () {
-        final textEditingValue = _textEditingController.value;
+  late final _onChangedField = debounce(
+    () {
+      final textEditingValue = _textEditingController.value;
 
-        // If the text field is empty, then there is no need to do anything.
-        if (textEditingValue.text.isEmpty) return _closeOptions();
+      // If the content has not changed, then there is nothing to do.
+      if (textEditingValue.text == _lastFieldText) return;
 
-        // If the text field is not empty, then we need to check if the
-        // text field contains a trigger.
-        final triggerWithQuery = _getInvokedTriggerWithQuery(textEditingValue);
+      // Make sure the options are no longer hidden if the content of the
+      // field changes.
+      _hideOptions = false;
+      _lastFieldText = textEditingValue.text;
 
-        // If the text field does not contain a trigger, then there is no need
-        // to do anything.
-        if (triggerWithQuery == null) return _closeOptions();
+      // If the text field is empty, then there is no need to do anything.
+      if (textEditingValue.text.isEmpty) return closeOptions();
 
-        // If the text field contains a trigger, then we need to open the
-        // portal.
-        final trigger = triggerWithQuery.trigger;
-        final query = triggerWithQuery.query;
-        return _showOptions(query, trigger);
-      },
-      const Duration(milliseconds: 300),
-    ).call();
-  }
+      // If the text field is not empty, then we need to check if the
+      // text field contains a trigger.
+      final triggerWithQuery = _getInvokedTriggerWithQuery(textEditingValue);
+
+      // If the text field does not contain a trigger, then there is no need
+      // to do anything.
+      if (triggerWithQuery == null) return closeOptions();
+
+      // If the text field contains a trigger, then we need to open the
+      // portal.
+      final trigger = triggerWithQuery.trigger;
+      final query = triggerWithQuery.query;
+      return showOptions(query, trigger);
+    },
+    widget.debounceDuration,
+  );
 
   // Called when the field's FocusNode changes.
   void _onChangedFocus() {
@@ -297,31 +352,37 @@ class _MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
     if (widget.focusNode == null) {
       _focusNode.dispose();
     }
+    _onChangedField.cancel();
+    closeOptions();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final anchor = widget.optionsAlignment._toAnchor();
-    final shouldShowOptions = _shouldShowOptions;
-    final optionViewBuilder = shouldShowOptions
-        ? _currentTrigger!.optionsViewBuilder(
-            context,
-            _currentQuery!,
-            _textEditingController,
-            _closeOptions,
-          )
-        : null;
+    // Adding additional builder so that [MultiTriggerAutocomplete.of] works.
+    return Builder(
+      builder: (context) {
+        final anchor = widget.optionsAlignment._toAnchor();
+        final shouldShowOptions = _shouldShowOptions;
+        final optionViewBuilder = shouldShowOptions
+            ? _currentTrigger!.optionsViewBuilder(
+                context,
+                _currentQuery!,
+                _textEditingController,
+              )
+            : null;
 
-    return PortalTarget(
-      anchor: anchor,
-      visible: shouldShowOptions,
-      portalFollower: optionViewBuilder,
-      child: widget.fieldViewBuilder(
-        context,
-        _textEditingController,
-        _focusNode,
-      ),
+        return PortalTarget(
+          anchor: anchor,
+          visible: shouldShowOptions,
+          portalFollower: optionViewBuilder,
+          child: widget.fieldViewBuilder(
+            context,
+            _textEditingController,
+            _focusNode,
+          ),
+        );
+      },
     );
   }
 }

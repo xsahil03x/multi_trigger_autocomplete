@@ -7,7 +7,6 @@ typedef AutocompleteTriggerOptionsViewBuilder = Widget Function(
   BuildContext context,
   AutocompleteQuery autocompleteQuery,
   TextEditingController textEditingController,
-  VoidCallback closeOptions,
 );
 
 class AutocompleteTrigger {
