@@ -193,4 +193,108 @@ void main() {
       },
     );
   });
+
+  group('2 Autocomplete trigger cannot be considered equal if', () {
+    test('they have different `trigger`', () {
+      final trigger1 = AutocompleteTrigger(
+        trigger: '@',
+        optionsViewBuilder: (
+          context,
+          autocompleteQuery,
+          textEditingController,
+        ) {
+          return const SizedBox.shrink();
+        },
+      );
+      final trigger2 = AutocompleteTrigger(
+        trigger: '#',
+        optionsViewBuilder: (
+          context,
+          autocompleteQuery,
+          textEditingController,
+        ) {
+          return const SizedBox.shrink();
+        },
+      );
+      expect(trigger1, isNot(trigger2));
+    });
+
+    test('they have different `triggerOnlyAtStart`', () {
+      final trigger1 = AutocompleteTrigger(
+        trigger: '@',
+        triggerOnlyAtStart: true,
+        optionsViewBuilder: (
+          context,
+          autocompleteQuery,
+          textEditingController,
+        ) {
+          return const SizedBox.shrink();
+        },
+      );
+      final trigger2 = AutocompleteTrigger(
+        trigger: '@',
+        triggerOnlyAtStart: false,
+        optionsViewBuilder: (
+          context,
+          autocompleteQuery,
+          textEditingController,
+        ) {
+          return const SizedBox.shrink();
+        },
+      );
+      expect(trigger1, isNot(trigger2));
+    });
+
+    test('they have different `triggerOnlyAfterSpace`', () {
+      final trigger1 = AutocompleteTrigger(
+        trigger: '@',
+        triggerOnlyAfterSpace: true,
+        optionsViewBuilder: (
+          context,
+          autocompleteQuery,
+          textEditingController,
+        ) {
+          return const SizedBox.shrink();
+        },
+      );
+      final trigger2 = AutocompleteTrigger(
+        trigger: '@',
+        triggerOnlyAfterSpace: false,
+        optionsViewBuilder: (
+          context,
+          autocompleteQuery,
+          textEditingController,
+        ) {
+          return const SizedBox.shrink();
+        },
+      );
+      expect(trigger1, isNot(trigger2));
+    });
+
+    test('they have different `minimumRequiredCharacters`', () {
+      final trigger1 = AutocompleteTrigger(
+        trigger: '@',
+        minimumRequiredCharacters: 3,
+        optionsViewBuilder: (
+          context,
+          autocompleteQuery,
+          textEditingController,
+        ) {
+          return const SizedBox.shrink();
+        },
+      );
+      final trigger2 = AutocompleteTrigger(
+        trigger: '@',
+        minimumRequiredCharacters: 4,
+        optionsViewBuilder: (
+          context,
+          autocompleteQuery,
+          textEditingController,
+        ) {
+          return const SizedBox.shrink();
+        },
+      );
+      expect(trigger1, isNot(trigger2));
+    });
+  });
 }
