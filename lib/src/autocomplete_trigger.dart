@@ -16,6 +16,7 @@ class AutocompleteTrigger {
     required this.trigger,
     required this.optionsViewBuilder,
     this.triggerOnlyAtStart = false,
+    this.triggerOnlyAfterSpace = true,
     this.minimumRequiredCharacters = 0,
   });
 
@@ -26,6 +27,9 @@ class AutocompleteTrigger {
 
   /// Whether the [trigger] should only be recognised at the start of the input.
   final bool triggerOnlyAtStart;
+
+  /// Whether the [trigger] should only be recognised after a space.
+  final bool triggerOnlyAfterSpace;
 
   /// The minimum required characters for the [trigger] to start recognising
   /// a autocomplete options.
@@ -53,12 +57,14 @@ class AutocompleteTrigger {
           runtimeType == other.runtimeType &&
           trigger == other.trigger &&
           triggerOnlyAtStart == other.triggerOnlyAtStart &&
+          triggerOnlyAfterSpace == other.triggerOnlyAfterSpace &&
           minimumRequiredCharacters == other.minimumRequiredCharacters;
 
   @override
   int get hashCode =>
       trigger.hashCode ^
       triggerOnlyAtStart.hashCode ^
+      triggerOnlyAfterSpace.hashCode ^
       minimumRequiredCharacters.hashCode;
 
   /// Checks if the user is invoking the recognising [trigger] and returns
@@ -84,7 +90,9 @@ class AutocompleteTrigger {
     // valid examples: "@user", "Hello @user"
     // invalid examples: "Hello@user"
     final textBeforeTrigger = text.substring(0, firstTriggerIndexBeforeCursor);
-    if (textBeforeTrigger.isNotEmpty && !textBeforeTrigger.endsWith(' ')) {
+    if (triggerOnlyAfterSpace &&
+        textBeforeTrigger.isNotEmpty &&
+        !textBeforeTrigger.endsWith(' ')) {
       return null;
     }
 

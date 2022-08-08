@@ -1,7 +1,10 @@
+// ignore_for_file: library_private_types_in_public_api
+
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:multi_trigger_autocomplete/multi_trigger_autocomplete.dart';
-import 'package:rate_limiter/rate_limiter.dart';
 
 /// The type of the Autocomplete callback which returns the widget that
 /// contains the input [TextField] or [TextFormField].
@@ -30,11 +33,13 @@ enum OptionsAlignment {
     switch (this) {
       case OptionsAlignment.below:
         return const Aligned(
+          widthFactor: 1,
           follower: Alignment.topCenter,
           target: Alignment.bottomCenter,
         );
       case OptionsAlignment.above:
         return const Aligned(
+          widthFactor: 1,
           follower: Alignment.bottomCenter,
           target: Alignment.topCenter,
         );
@@ -137,19 +142,19 @@ class MultiTriggerAutocomplete extends StatefulWidget {
   }
 
   /// Returns the nearest [StreamAutocomplete] ancestor of the given context.
-  static _MultiTriggerAutocompleteState of(BuildContext context) {
+  static MultiTriggerAutocompleteState of(BuildContext context) {
     final state =
-        context.findAncestorStateOfType<_MultiTriggerAutocompleteState>();
+        context.findAncestorStateOfType<MultiTriggerAutocompleteState>();
     assert(state != null, 'MultiTriggerAutocomplete not found');
     return state!;
   }
 
   @override
-  _MultiTriggerAutocompleteState createState() =>
-      _MultiTriggerAutocompleteState();
+  MultiTriggerAutocompleteState createState() =>
+      MultiTriggerAutocompleteState();
 }
 
-class _MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
+class MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
   late TextEditingController _textEditingController;
   late FocusNode _focusNode;
 
@@ -206,10 +211,12 @@ class _MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
   }
 
   void closeOptions() {
-    final prev = _currentQuery;
-    if (prev == null) return;
+    final prevQuery = _currentQuery;
+    final prevTrigger = _currentTrigger;
+    if (prevQuery == null || prevTrigger == null) return;
 
     _currentQuery = null;
+    _currentTrigger = null;
     if (mounted) setState(() {});
   }
 
@@ -241,9 +248,12 @@ class _MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
     return null;
   }
 
+  Timer? _debounceTimer;
+
   // Called when _textEditingController changes.
-  late final _onChangedField = debounce(
-    () {
+  void _onChangedField() {
+    if (_debounceTimer?.isActive == true) _debounceTimer?.cancel();
+    _debounceTimer = Timer(widget.debounceDuration, () {
       final textEditingValue = _textEditingController.value;
 
       // If the content has not changed, then there is nothing to do.
@@ -270,9 +280,8 @@ class _MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
       final trigger = triggerWithQuery.trigger;
       final query = triggerWithQuery.query;
       return showOptions(query, trigger);
-    },
-    widget.debounceDuration,
-  );
+    });
+  }
 
   // Called when the field's FocusNode changes.
   void _onChangedFocus() {
@@ -352,8 +361,9 @@ class _MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
     if (widget.focusNode == null) {
       _focusNode.dispose();
     }
-    _onChangedField.cancel();
-    closeOptions();
+    _debounceTimer?.cancel();
+    _currentTrigger = null;
+    _currentQuery = null;
     super.dispose();
   }
 

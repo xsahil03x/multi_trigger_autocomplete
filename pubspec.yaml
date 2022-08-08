@@ -12,7 +12,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  rate_limiter: ^0.1.1
   flutter_portal: ^1.0.0
 
 dev_dependencies:
