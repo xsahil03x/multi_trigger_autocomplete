@@ -37,17 +37,8 @@ class AutocompleteTrigger {
 
   /// Builds the selectable options widgets from a list of options objects.
   ///
-  /// The options are displayed floating below the field using a
-  /// [CompositedTransformFollower] inside of an [Overlay], not at the same
-  /// place in the widget tree as [RawAutocomplete].
-  ///
-  /// In order to track which item is highlighted by keyboard navigation, the
-  /// resulting options will be wrapped in an inherited
-  /// [AutocompleteHighlightedOption] widget.
-  /// Inside this callback, the index of the highlighted option can be obtained
-  /// from [AutocompleteHighlightedOption.of] to display the highlighted option
-  /// with a visual highlight to indicate it will be the option selected from
-  /// the keyboard.
+  /// The options are displayed floating above or below the field using a
+  /// [PortalTarget] inside of an [Portal].
   final AutocompleteTriggerOptionsViewBuilder optionsViewBuilder;
 
   @override
