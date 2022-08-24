@@ -1,6 +1,6 @@
 name: multi_trigger_autocomplete
 homepage: https://github.com/xsahil03x/multi_trigger_autocomplete
-description: A simple widget to add trigger based autocomplete functionality to your app.
+description: A flutter widget to add trigger based autocomplete functionality to your app.
 version: 1.0.0
 repository: https://github.com/xsahil03x/multi_trigger_autocomplete
 issue_tracker: https://github.com/xsahil03x/multi_trigger_autocomplete/issues

@@ -2,7 +2,7 @@
 
 [![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=102)](https://opensource.org/licenses/MIT) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/xsahil03x/multi_trigger_autocomplete/blob/master/LICENSE) [![Dart CI](https://github.com/xsahil03x/multi_trigger_autocomplete/workflows/multi_trigger_autocomplete/badge.svg)](https://github.com/xsahil03x/multi_trigger_autocomplete/actions) [![CodeCov](https://codecov.io/gh/xsahil03x/multi_trigger_autocomplete/branch/master/graph/badge.svg)](https://codecov.io/gh/xsahil03x/multi_trigger_autocomplete) [![Version](https://img.shields.io/pub/v/multi_trigger_autocomplete.svg)](https://pub.dartlang.org/packages/multi_trigger_autocomplete)
 
-A simple widget to add trigger based autocomplete functionality to your app.
+A flutter widget to add trigger based autocomplete functionality to your app.
 
 **Show some ❤️ and star the repo to support the project**
 
