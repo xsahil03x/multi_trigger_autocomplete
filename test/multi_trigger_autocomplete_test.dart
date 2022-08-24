@@ -196,7 +196,7 @@ void main() {
       'options position changes when alignment changed',
       (tester) async {
         late StateSetter setState;
-        OptionsAlignment alignment = OptionsAlignment.below;
+        OptionsAlignment alignment = OptionsAlignment.bottom;
         await tester.pumpWidget(
           Boilerplate(
             child: StatefulBuilder(
@@ -229,7 +229,7 @@ void main() {
         expect(optionsOffset.dy, fieldOffset.dy + fieldSize.height);
 
         // Changing the alignment should change the position of options.
-        setState(() => alignment = OptionsAlignment.above);
+        setState(() => alignment = OptionsAlignment.top);
         await tester.pump();
         fieldOffset = tester.getBottomLeft(find.byType(TextFormField));
         final optionsOffsetOpen = tester.getBottomLeft(find.byType(ListView));
