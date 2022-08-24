@@ -17,7 +17,7 @@ jobs:
     with:
       flutter_channel: stable
       flutter_version: 3.0.0
-      min_coverage: 85
+      min_coverage: 82
 
   pana:
     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/pana.yml@v1
