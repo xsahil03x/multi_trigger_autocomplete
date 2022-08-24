@@ -7,7 +7,7 @@ A flutter widget to add trigger based autocomplete functionality to your app.
 **Show some ❤️ and star the repo to support the project**
 
 <p>
-  <img src="asset/package_demo.gif" alt="An animated image of the MultiTriggerAutocomplete" height="400"/>
+  <img src="https://github.com/xsahil03x/multi_trigger_autocomplete/blob/master/asset/package_demo.gif?raw=true" alt="An animated image of the MultiTriggerAutocomplete" height="400"/>
 </p>
 
 ## Installation
@@ -122,7 +122,7 @@ MultiTriggerAutocomplete(
 
 | Mention Autocomplete                                                 | Hashtag Autocomplete                                                        | Emoji Autocomplete                                                      |
 |----------------------------------------------------------------------|-----------------------------------------------------------------------------|-------------------------------------------------------------------------|
-| <img src="asset/mention_demo.gif" height="400" alt="Mention Autocomplete"/> | <img src="asset/hashtag_demo.gif" height="400" alt="Hashtag Autocomplete"/> | <img src="asset/emoji_demo.gif" height="400" alt="Emoji Autocomplete"/> |
+| <img src="https://github.com/xsahil03x/multi_trigger_autocomplete/blob/master/asset/mention_demo.gif?raw=true" height="400" alt="Mention Autocomplete"/> | <img src="https://github.com/xsahil03x/multi_trigger_autocomplete/blob/master/asset/hashtag_demo.gif?raw=true" height="400" alt="Hashtag Autocomplete"/> | <img src="https://github.com/xsahil03x/multi_trigger_autocomplete/blob/master/asset/emoji_demo.gif?raw=true" height="400" alt="Emoji Autocomplete"/> |
 
 ## Customization
 
