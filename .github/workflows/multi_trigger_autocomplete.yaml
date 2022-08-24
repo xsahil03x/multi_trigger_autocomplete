@@ -19,5 +19,10 @@ jobs:
       flutter_version: 3.0.0
       min_coverage: 82
 
+  upload_coverage:
+    if: ${{ always() }}
+    needs: build
+    uses: codecov/codecov-action@v1
+
   pana:
     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/pana.yml@v1
