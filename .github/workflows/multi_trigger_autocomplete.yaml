@@ -20,8 +20,9 @@ jobs:
       min_coverage: 82
 
   upload_coverage:
-    if: ${{ always() }}
     needs: build
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
     uses: codecov/codecov-action@v1
 
   pana:
