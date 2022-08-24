@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           Expanded(child: ChatMessageList(messages: messages)),
           MultiTriggerAutocomplete(
-            optionsAlignment: OptionsAlignment.above,
+            optionsAlignment: OptionsAlignment.topStart,
             autocompleteTriggers: [
               AutocompleteTrigger(
                 trigger: '@',

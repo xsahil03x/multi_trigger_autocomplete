@@ -19,27 +19,61 @@ typedef MultiTriggerAutocompleteFieldViewBuilder = Widget Function(
 /// Positions the [AutocompleteTrigger] options around the [TextField] or
 /// [TextFormField] that triggered the autocomplete.
 enum OptionsAlignment {
-  /// The options are displayed below the field.
-  ///
-  /// This is the default.
-  below,
+  /// Positions the options to the top of the field.
+  top,
 
-  /// The options are displayed above the field.
-  above;
+  /// Positions the options to the bottom of the field.
+  bottom,
 
-  Anchor _toAnchor() {
+  /// Positions the options to the top left of the field.
+  topStart,
+
+  /// Positions the options to the top right of the field.
+  topEnd,
+
+  /// Positions the options to the bottom left of the field.
+  bottomStart,
+
+  /// Positions the options to the bottom right of the field.
+  bottomEnd;
+
+  Anchor _toAnchor({double? widthFactor = 1.0}) {
     switch (this) {
-      case OptionsAlignment.below:
-        return const Aligned(
-          widthFactor: 1,
+      case OptionsAlignment.top:
+        return Aligned(
+          widthFactor: widthFactor,
+          follower: Alignment.bottomCenter,
+          target: Alignment.topCenter,
+        );
+      case OptionsAlignment.bottom:
+        return Aligned(
+          widthFactor: widthFactor,
           follower: Alignment.topCenter,
           target: Alignment.bottomCenter,
         );
-      case OptionsAlignment.above:
-        return const Aligned(
-          widthFactor: 1,
-          follower: Alignment.bottomCenter,
-          target: Alignment.topCenter,
+      case OptionsAlignment.topStart:
+        return Aligned(
+          widthFactor: widthFactor,
+          follower: Alignment.bottomLeft,
+          target: Alignment.topLeft,
+        );
+      case OptionsAlignment.topEnd:
+        return Aligned(
+          widthFactor: widthFactor,
+          follower: Alignment.bottomRight,
+          target: Alignment.topRight,
+        );
+      case OptionsAlignment.bottomStart:
+        return Aligned(
+          widthFactor: widthFactor,
+          follower: Alignment.topLeft,
+          target: Alignment.bottomLeft,
+        );
+      case OptionsAlignment.bottomEnd:
+        return Aligned(
+          widthFactor: widthFactor,
+          follower: Alignment.topRight,
+          target: Alignment.bottomRight,
         );
     }
   }
@@ -58,7 +92,8 @@ class MultiTriggerAutocomplete extends StatefulWidget {
     this.focusNode,
     this.textEditingController,
     this.initialValue,
-    this.optionsAlignment = OptionsAlignment.below,
+    this.optionsAlignment = OptionsAlignment.bottom,
+    this.optionsWidthFactor = 1.0,
     this.debounceDuration = const Duration(milliseconds: 300),
   })  : assert((focusNode == null) == (textEditingController == null)),
         assert(
@@ -122,6 +157,13 @@ class MultiTriggerAutocomplete extends StatefulWidget {
   ///
   /// The default value is [MultiTriggerAutocompleteAlignment.below].
   final OptionsAlignment optionsAlignment;
+
+  /// The width to make the options as a multiple of the width of the
+  /// field.
+  ///
+  /// The default value is 1.0, which makes the options the same width
+  /// as the field.
+  final double? optionsWidthFactor;
 
   /// The duration of the debounce period for the [TextEditingController].
   ///
@@ -370,7 +412,9 @@ class MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
     // Adding additional builder so that [MultiTriggerAutocomplete.of] works.
     return Builder(
       builder: (context) {
-        final anchor = widget.optionsAlignment._toAnchor();
+        final anchor = widget.optionsAlignment._toAnchor(
+          widthFactor: widget.optionsWidthFactor,
+        );
         final shouldShowOptions = _shouldShowOptions;
         final optionViewBuilder = shouldShowOptions
             ? _currentTrigger!.optionsViewBuilder(
