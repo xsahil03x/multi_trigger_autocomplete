@@ -9,6 +9,9 @@ on:
       - master
 
 jobs:
+  semantic-pull-request:
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/semantic_pull_request.yml@v1
+
   build:
     runs-on: ubuntu-latest
     steps:
@@ -29,20 +32,11 @@ jobs:
 
       - name: Check Code Coverage
         uses: VeryGoodOpenSource/very_good_coverage@v1.2.0
+        with:
+          min_coverage: 82
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
 
   pana:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2.3.4
-      - uses: subosito/flutter-action@v1.5.3
-
-      - name: Install Dependencies
-        run: |
-          flutter packages get
-          flutter pub global activate pana
-
-      - name: Verify Pub Score
-        run: ../../tool/verify_pub_score.sh
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/pana.yml@v1
