@@ -26,7 +26,7 @@ with [Portal](https://pub.dev/documentation/flutter_portal/latest/flutter_portal
 uses [flutter_portal](https://pub.dev/packages/flutter_portal)
 to show the options view.
 
-(Credits to: [Remi Rousselet](https://github.com/rrousselGit/flutter_portal))
+(Credits to: [Remi Rousselet](https://github.com/rrousselGit))
 
 > `Portal`, is the equivalent of [Overlay].
 >
