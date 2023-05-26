@@ -94,6 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               AutocompleteTrigger(
                 trigger: ':',
+                pattern: RegExp(r'^[\w:]*$'),
                 optionsViewBuilder: (context, autocompleteQuery, controller) {
                   return EmojiAutocompleteOptions(
                     query: autocompleteQuery.query,

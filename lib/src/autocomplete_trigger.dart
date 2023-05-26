@@ -12,9 +12,10 @@ typedef AutocompleteTriggerOptionsViewBuilder = Widget Function(
 class AutocompleteTrigger {
   /// Creates a [AutocompleteTrigger] which can be used to trigger
   /// autocomplete suggestions.
-  const AutocompleteTrigger({
+  AutocompleteTrigger({
     required this.trigger,
     required this.optionsViewBuilder,
+    this.pattern,
     this.triggerOnlyAtStart = false,
     this.triggerOnlyAfterSpace = true,
     this.minimumRequiredCharacters = 0,
@@ -27,6 +28,9 @@ class AutocompleteTrigger {
 
   /// Whether the [trigger] should only be recognised at the start of the input.
   final bool triggerOnlyAtStart;
+
+  /// The pattern accepted by [trigger] to recognize autocomplete options
+  RegExp? pattern;
 
   /// Whether the [trigger] should only be recognised after a space.
   final bool triggerOnlyAfterSpace;
@@ -61,6 +65,9 @@ class AutocompleteTrigger {
   /// Checks if the user is invoking the recognising [trigger] and returns
   /// the autocomplete query if so.
   AutocompleteQuery? invokingTrigger(TextEditingValue textEditingValue) {
+    // If the pattern is not defined, the default is set
+    pattern ??= RegExp(r'^[\w.]*$');
+
     final text = textEditingValue.text;
     final cursorPosition = textEditingValue.selection.baseOffset;
 
@@ -96,7 +103,7 @@ class AutocompleteTrigger {
     // valid example: "@luke_skywa..."
     // invalid example: "@luke skywa..."
     final suggestionText = text.substring(suggestionStart, suggestionEnd);
-    if (suggestionText.contains(' ')) return null;
+    if (!pattern!.hasMatch(suggestionText)) return null;
 
     // A minimum number of characters can be provided to only show
     // suggestions after the customer has input enough characters.

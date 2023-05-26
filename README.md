@@ -217,6 +217,10 @@ AutocompleteTrigger(
   // "Hello @l" -> Shows zero suggestions.
   // "Hello @lu" -> Shows suggestions for @lu.
   minimumRequiredCharacters: 2,
+
+  // The pattern accepted by [trigger] to recognize in the
+  // input text
+  pattern: RegExp(r'^[\w.]*$'),
   
   // The options view builder is used to build the options view
   // that will be shown when the [trigger] is detected.
