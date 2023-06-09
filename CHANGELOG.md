@@ -1,4 +1,4 @@
-## Upcoming
+## 1.0.0
 
 * Fixed `FieldView` focus getting lost on clicking the `OptionsView` on non-mobile platforms.
 * Fixed `RangeError` when `textEditingValue.selection.isInvalid`.
