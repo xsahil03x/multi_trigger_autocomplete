@@ -18,3 +18,18 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+
+topics:
+  - mentions
+  - autocomplete
+  - autocomplete-search
+  - autocomplete-textfield
+  - autocomplete-suggestions
+
+screenshots:
+  - description: 'Emoji Demo'
+    path: asset/emoji_demo.gif
+  - description: 'Hashtag Demo'
+    path: asset/hashtag_demo.gif
+  - description: 'Mention Demo'
+    path: asset/mention_demo.gif
