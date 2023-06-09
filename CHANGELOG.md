@@ -1,7 +1,10 @@
 ## Upcoming
 
 * Fixed `FieldView` focus getting lost on clicking the `OptionsView` on non-mobile platforms.
-* Fixed `RangeError` when `textEditingValue.selection.isInvalid`. [#11](https://github.com/xsahil03x/multi_trigger_autocomplete/issues/11)
+* Fixed `RangeError` when `textEditingValue.selection.isInvalid`.
+  [#11](https://github.com/xsahil03x/multi_trigger_autocomplete/issues/11)
+* Fixed `AutocompleteTrigger` not getting triggered when the text is a multi-line
+  string. [#12](https://github.com/xsahil03x/multi_trigger_autocomplete/issues/12)
 
 ## 0.1.1
 

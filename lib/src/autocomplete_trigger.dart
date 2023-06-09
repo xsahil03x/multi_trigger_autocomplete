@@ -81,13 +81,14 @@ class AutocompleteTrigger {
       return null;
     }
 
-    // Only show typing suggestions after a space, or at the start of the input
-    // valid examples: "@user", "Hello @user"
+    // Only show typing suggestions after a space, new line or at the start of the input.
+    // valid examples: "@user", "Hello @user", "Hello\n@user"
     // invalid examples: "Hello@user"
     final textBeforeTrigger = text.substring(0, firstTriggerIndexBeforeCursor);
     if (triggerOnlyAfterSpace &&
         textBeforeTrigger.isNotEmpty &&
-        !textBeforeTrigger.endsWith(' ')) {
+        !(textBeforeTrigger.endsWith(' ') ||
+            textBeforeTrigger.endsWith('\n'))) {
       return null;
     }
 
