@@ -62,7 +62,11 @@ class AutocompleteTrigger {
   /// the autocomplete query if so.
   AutocompleteQuery? invokingTrigger(TextEditingValue textEditingValue) {
     final text = textEditingValue.text;
-    final cursorPosition = textEditingValue.selection.baseOffset;
+    final selection = textEditingValue.selection;
+
+    // If the selection is invalid, then it's not a trigger.
+    if (!selection.isValid) return null;
+    final cursorPosition = selection.baseOffset;
 
     // Find the first [trigger] location before the input cursor.
     final firstTriggerIndexBeforeCursor =
