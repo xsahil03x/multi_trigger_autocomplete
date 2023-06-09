@@ -417,10 +417,12 @@ class MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
         );
         final shouldShowOptions = _shouldShowOptions;
         final optionViewBuilder = shouldShowOptions
-            ? _currentTrigger!.optionsViewBuilder(
-                context,
-                _currentQuery!,
-                _textEditingController,
+            ? TextFieldTapRegion(
+                child: _currentTrigger!.optionsViewBuilder(
+                  context,
+                  _currentQuery!,
+                  _textEditingController,
+                ),
               )
             : null;
 
