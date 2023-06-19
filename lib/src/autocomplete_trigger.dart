@@ -17,6 +17,7 @@ class AutocompleteTrigger {
     required this.optionsViewBuilder,
     this.triggerOnlyAtStart = false,
     this.triggerOnlyAfterSpace = true,
+    this.allowSpacesInSuggestions = false,
     this.minimumRequiredCharacters = 0,
   });
 
@@ -30,6 +31,12 @@ class AutocompleteTrigger {
 
   /// Whether the [trigger] should only be recognised after a space.
   final bool triggerOnlyAfterSpace;
+
+  /// Whether the [trigger] should recognise autocomplete options
+  /// containing spaces. If set to true, suggestions like "@luke skywalker"
+  /// would be considered valid. If set to false, the first space character
+  /// would end the suggestion.
+  final bool allowSpacesInSuggestions;
 
   /// The minimum required characters for the [trigger] to start recognising
   /// a autocomplete options.
@@ -97,11 +104,16 @@ class AutocompleteTrigger {
     final suggestionEnd = cursorPosition;
     if (suggestionStart > suggestionEnd) return null;
 
-    // Fetch the suggestion text. The suggestions can't have spaces.
-    // valid example: "@luke_skywa..."
-    // invalid example: "@luke skywa..."
+    // Fetch the suggestion text.
     final suggestionText = text.substring(suggestionStart, suggestionEnd);
-    if (suggestionText.contains(' ')) return null;
+
+    // If [allowSpacesInSuggestions] is false, the suggestions can't have spaces.
+    // If true, suggestions like "@luke skywalker" would be considered valid.
+    // If false, suggestions like "@luke skywalker" would be considered invalid,
+    // and only examples like "@luke_skywalker" would be valid.
+    if (!allowSpacesInSuggestions && suggestionText.contains(' ')) {
+      return null;
+    }
 
     // A minimum number of characters can be provided to only show
     // suggestions after the customer has input enough characters.
