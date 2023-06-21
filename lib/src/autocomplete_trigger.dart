@@ -12,19 +12,31 @@ typedef AutocompleteTriggerOptionsViewBuilder = Widget Function(
 class AutocompleteTrigger {
   /// Creates a [AutocompleteTrigger] which can be used to trigger
   /// autocomplete suggestions.
-  const AutocompleteTrigger({
+  AutocompleteTrigger({
     required this.trigger,
     required this.optionsViewBuilder,
     this.triggerOnlyAtStart = false,
     this.triggerOnlyAfterSpace = true,
     this.allowSpacesInSuggestions = false,
     this.minimumRequiredCharacters = 0,
-  });
+    Set<String>? triggers,
+  }) {
+    assert(
+      !(allowSpacesInSuggestions && triggers == null),
+      'Error: Triggers cannot be empty if allowSpacesInSuggestions is true.',
+    );
+    triggerSet = triggers ?? {trigger};
+  }
 
   /// The trigger character.
   ///
   /// eg. '@', '#', ':'
   final String trigger;
+
+  /// All trigger characters.
+  ///
+  /// eg. {'@', '#', ':'}
+  late final Set<String> triggerSet;
 
   /// Whether the [trigger] should only be recognised at the start of the input.
   final bool triggerOnlyAtStart;
@@ -76,11 +88,16 @@ class AutocompleteTrigger {
     final cursorPosition = selection.baseOffset;
 
     // Find the first [trigger] location before the input cursor.
+    final triggersRegExp = RegExp(triggerSet.join('|'));
     final firstTriggerIndexBeforeCursor =
-        text.substring(0, cursorPosition).lastIndexOf(trigger);
+        text.substring(0, cursorPosition).lastIndexOf(triggersRegExp);
 
     // If the [trigger] is not found before the cursor, then it's not a trigger.
-    if (firstTriggerIndexBeforeCursor == -1) return null;
+    // or the [trigger] is not at [firstTriggerIndexBeforeCursor]
+    if (firstTriggerIndexBeforeCursor == -1 ||
+        text[firstTriggerIndexBeforeCursor] != trigger) {
+      return null;
+    }
 
     // If the [trigger] is found before the cursor, but the [trigger] is only
     // recognised at the start of the input, then it's not a trigger.
