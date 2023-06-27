@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:multi_trigger_autocomplete/src/autocomplete_query.dart';
 
@@ -17,19 +19,36 @@ class AutocompleteTrigger {
     required this.optionsViewBuilder,
     this.triggerOnlyAtStart = false,
     this.triggerOnlyAfterSpace = true,
+    this.allowSpacesInSuggestions = false,
     this.minimumRequiredCharacters = 0,
-  });
+    this.triggerSet,
+  }) : assert(
+          !(allowSpacesInSuggestions && triggerSet == null),
+          'Error: Triggers cannot be empty if allowSpacesInSuggestions is true.',
+        );
 
   /// The trigger character.
   ///
   /// eg. '@', '#', ':'
   final String trigger;
 
+  /// All trigger characters.
+  /// Needed if [allowSpacesInSuggestions] is set to true.
+  ///
+  /// eg. {'@', '#', ':'}
+  final Set<String>? triggerSet;
+
   /// Whether the [trigger] should only be recognised at the start of the input.
   final bool triggerOnlyAtStart;
 
   /// Whether the [trigger] should only be recognised after a space.
   final bool triggerOnlyAfterSpace;
+
+  /// Whether the [trigger] should recognise autocomplete options
+  /// containing spaces. If set to true, suggestions like "@luke skywalker"
+  /// would be considered valid. If set to false, the first space character
+  /// would end the suggestion.
+  final bool allowSpacesInSuggestions;
 
   /// The minimum required characters for the [trigger] to start recognising
   /// a autocomplete options.
@@ -68,12 +87,25 @@ class AutocompleteTrigger {
     if (!selection.isValid) return null;
     final cursorPosition = selection.baseOffset;
 
-    // Find the first [trigger] location before the input cursor.
+    // Find the first [triggerSet] item location before the input cursor.
+    final triggersRegExp = RegExp(
+        (triggerSet ?? {trigger}).map((e) => RegExp.escape(e)).join('|'));
     final firstTriggerIndexBeforeCursor =
-        text.substring(0, cursorPosition).lastIndexOf(trigger);
+        text.substring(0, cursorPosition).lastIndexOf(triggersRegExp);
 
     // If the [trigger] is not found before the cursor, then it's not a trigger.
-    if (firstTriggerIndexBeforeCursor == -1) return null;
+    if (firstTriggerIndexBeforeCursor == -1) {
+      return null;
+    }
+
+    // If the [trigger] is not at [firstTriggerIndexBeforeCursor], then it's not a trigger.
+    final triggerFromText = text.substring(
+      firstTriggerIndexBeforeCursor,
+      min(firstTriggerIndexBeforeCursor + trigger.length, text.length),
+    );
+    if (triggerFromText != trigger) {
+      return null;
+    }
 
     // If the [trigger] is found before the cursor, but the [trigger] is only
     // recognised at the start of the input, then it's not a trigger.
@@ -97,11 +129,16 @@ class AutocompleteTrigger {
     final suggestionEnd = cursorPosition;
     if (suggestionStart > suggestionEnd) return null;
 
-    // Fetch the suggestion text. The suggestions can't have spaces.
-    // valid example: "@luke_skywa..."
-    // invalid example: "@luke skywa..."
+    // Fetch the suggestion text.
     final suggestionText = text.substring(suggestionStart, suggestionEnd);
-    if (suggestionText.contains(' ')) return null;
+
+    // If [allowSpacesInSuggestions] is false, the suggestions can't have spaces.
+    // If true, suggestions like "@luke skywalker" would be considered valid.
+    // If false, suggestions like "@luke skywalker" would be considered invalid,
+    // and only examples like "@luke_skywalker" would be valid.
+    if (!allowSpacesInSuggestions && suggestionText.contains(' ')) {
+      return null;
+    }
 
     // A minimum number of characters can be provided to only show
     // suggestions after the customer has input enough characters.

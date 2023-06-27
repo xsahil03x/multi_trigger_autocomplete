@@ -297,4 +297,66 @@ void main() {
       expect(trigger1, isNot(trigger2));
     });
   });
+
+  group('Autocomplete trigger with and without `allowSpacesInSuggestions`', () {
+    final triggerWithSpaces = AutocompleteTrigger(
+      trigger: '@',
+      allowSpacesInSuggestions: true,
+      triggerSet: {'@'},
+      optionsViewBuilder: (
+        context,
+        autocompleteQuery,
+        textEditingController,
+      ) {
+        return const SizedBox.shrink();
+      },
+    );
+
+    final triggerWithoutSpaces = AutocompleteTrigger(
+      trigger: '@',
+      allowSpacesInSuggestions: false,
+      optionsViewBuilder: (
+        context,
+        autocompleteQuery,
+        textEditingController,
+      ) {
+        return const SizedBox.shrink();
+      },
+    );
+
+    test(
+      'should return query if `@` is invoked and the word contains spaces when `allowSpacesInSuggestions` is true',
+      () {
+        const text = 'Hey @Sahil Kumar';
+        final invoked = triggerWithSpaces.invokingTrigger(
+          const TextEditingValue(
+            text: text,
+            selection: TextSelection.collapsed(offset: text.length),
+          ),
+        );
+
+        expect(invoked, isNotNull);
+        expect(invoked!.query, 'Sahil Kumar');
+        expect(
+          invoked.selection,
+          const TextSelection(baseOffset: 5, extentOffset: 16),
+        );
+      },
+    );
+
+    test(
+      "should return null if `@` is invoked and the word contains spaces when `allowSpacesInSuggestions` is false",
+      () {
+        const text = 'Hey @Sahil Kumar';
+        final invoked = triggerWithoutSpaces.invokingTrigger(
+          const TextEditingValue(
+            text: text,
+            selection: TextSelection.collapsed(offset: text.length),
+          ),
+        );
+
+        expect(invoked, isNull);
+      },
+    );
+  });
 }
