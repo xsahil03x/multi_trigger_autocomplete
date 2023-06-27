@@ -302,7 +302,7 @@ void main() {
     final triggerWithSpaces = AutocompleteTrigger(
       trigger: '@',
       allowSpacesInSuggestions: true,
-      triggers: {'@'},
+      triggerSet: {'@'},
       optionsViewBuilder: (
         context,
         autocompleteQuery,

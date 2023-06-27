@@ -12,21 +12,18 @@ typedef AutocompleteTriggerOptionsViewBuilder = Widget Function(
 class AutocompleteTrigger {
   /// Creates a [AutocompleteTrigger] which can be used to trigger
   /// autocomplete suggestions.
-  AutocompleteTrigger({
+  const AutocompleteTrigger({
     required this.trigger,
     required this.optionsViewBuilder,
     this.triggerOnlyAtStart = false,
     this.triggerOnlyAfterSpace = true,
     this.allowSpacesInSuggestions = false,
     this.minimumRequiredCharacters = 0,
-    Set<String>? triggers,
-  }) {
-    assert(
-      !(allowSpacesInSuggestions && triggers == null),
-      'Error: Triggers cannot be empty if allowSpacesInSuggestions is true.',
-    );
-    triggerSet = triggers ?? {trigger};
-  }
+    this.triggerSet,
+  }) : assert(
+          !(allowSpacesInSuggestions && triggerSet == null),
+          'Error: Triggers cannot be empty if allowSpacesInSuggestions is true.',
+        );
 
   /// The trigger character.
   ///
@@ -34,9 +31,10 @@ class AutocompleteTrigger {
   final String trigger;
 
   /// All trigger characters.
+  /// Needed if [allowSpacesInSuggestions] is set to true.
   ///
   /// eg. {'@', '#', ':'}
-  late final Set<String> triggerSet;
+  final Set<String>? triggerSet;
 
   /// Whether the [trigger] should only be recognised at the start of the input.
   final bool triggerOnlyAtStart;
@@ -87,15 +85,21 @@ class AutocompleteTrigger {
     if (!selection.isValid) return null;
     final cursorPosition = selection.baseOffset;
 
-    // Find the first [trigger] location before the input cursor.
-    final triggersRegExp = RegExp(triggerSet.join('|'));
+    // Find the first [triggerSet] item location before the input cursor.
+    final triggersRegExp = RegExp(
+        (triggerSet ?? {trigger}).map((e) => RegExp.escape(e)).join('|'));
     final firstTriggerIndexBeforeCursor =
         text.substring(0, cursorPosition).lastIndexOf(triggersRegExp);
 
     // If the [trigger] is not found before the cursor, then it's not a trigger.
-    // or the [trigger] is not at [firstTriggerIndexBeforeCursor]
-    if (firstTriggerIndexBeforeCursor == -1 ||
-        text[firstTriggerIndexBeforeCursor] != trigger) {
+    if (firstTriggerIndexBeforeCursor == -1) {
+      return null;
+    }
+
+    // If the [trigger] is not at [firstTriggerIndexBeforeCursor], then it's not a trigger.
+    final triggerFromText = text.substring(firstTriggerIndexBeforeCursor,
+        firstTriggerIndexBeforeCursor + trigger.length);
+    if (triggerFromText != trigger) {
       return null;
     }
 
