@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:multi_trigger_autocomplete/src/autocomplete_query.dart';
 
@@ -97,8 +99,10 @@ class AutocompleteTrigger {
     }
 
     // If the [trigger] is not at [firstTriggerIndexBeforeCursor], then it's not a trigger.
-    final triggerFromText = text.substring(firstTriggerIndexBeforeCursor,
-        firstTriggerIndexBeforeCursor + trigger.length);
+    final triggerFromText = text.substring(
+      firstTriggerIndexBeforeCursor,
+      min(firstTriggerIndexBeforeCursor + trigger.length, text.length),
+    );
     if (triggerFromText != trigger) {
       return null;
     }
