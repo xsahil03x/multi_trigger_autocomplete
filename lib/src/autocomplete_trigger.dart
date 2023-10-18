@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:multi_trigger_autocomplete/src/autocomplete_query.dart';
 
@@ -89,7 +91,7 @@ class AutocompleteTrigger {
     // invalid examples: "Hello@user"
     final textBeforeTrigger = text.substring(0, firstTriggerIndexBeforeCursor);
     final lastCharBeforeTrigger =
-        textBeforeTrigger.substring(textBeforeTrigger.length - 1);
+        textBeforeTrigger.substring(max(textBeforeTrigger.length - 1, 0));
     if (triggerOnlyAfterSpace &&
         textBeforeTrigger.isNotEmpty &&
         !(lastCharBeforeTrigger == ' ' || lastCharBeforeTrigger == '\n')) {
