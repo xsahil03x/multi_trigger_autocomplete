@@ -88,9 +88,11 @@ class AutocompleteTrigger {
     // valid examples: "@user", "Hello @user"
     // invalid examples: "Hello@user"
     final textBeforeTrigger = text.substring(0, firstTriggerIndexBeforeCursor);
+    final lastCharBeforeTrigger =
+        textBeforeTrigger.substring(textBeforeTrigger.length - 1);
     if (triggerOnlyAfterSpace &&
         textBeforeTrigger.isNotEmpty &&
-        !textBeforeTrigger.endsWith(' ')) {
+        !(lastCharBeforeTrigger == ' ' || lastCharBeforeTrigger == '\n')) {
       return null;
     }
 
